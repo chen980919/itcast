@@ -1,7 +1,9 @@
 import axios from 'axios'
 
 // 设置请求的基准路径
-axios.defaults.baseURL = 'http://47.96.21.88:8888/api/private/v1/'
+// axios.defaults.baseURL = 'http://47.96.21.88:8888/api/private/v1/'
+
+axios.defaults.baseURL = 'http://localhost:8888/api/private/v1'
 
 // 登陆拦截器
 // 拦截器处理token
