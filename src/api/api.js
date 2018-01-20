@@ -26,8 +26,15 @@ export const login = (params) => {
   })
 }
 // 测试请求头
-export const testData = (params) => {
+export const getUsersData = (params) => {
   return axios.get('users', {params: params}).then(res => {
+    return res.data
+  })
+}
+// 用户管理-状态改变
+export const toggleUserState = (params) => {
+  // restful /users/512/state/true
+  return axios.put('users/' + params.uId + '/state/' + params.state).then(res => {
     return res.data
   })
 }
