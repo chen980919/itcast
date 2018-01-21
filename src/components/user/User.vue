@@ -27,11 +27,31 @@
     </el-table-column>
     <el-table-column
       prop="email"
-      label="邮箱">
+      label="邮箱"
+       width="180">
     </el-table-column>
     <el-table-column
       prop="mobile"
-      label="电话">
+      label="电话"
+       width="180">
+    </el-table-column>
+    <el-table-column
+      prop="mg_state"
+      label="用户状态"
+       width="180">
+      <template slot-scope="scope">
+          <el-switch v-model="scope.row.mg_state" @change='toggleUser(scope.row )'></el-switch>
+      </template>
+    </el-table-column>
+    <el-table-column
+      prop="mg_state"
+      label="操作"
+       width="280">
+      <template slot-scope="scope">
+          <el-button type="primary" size="mini" icon="el-icon-edit"></el-button>
+          <el-button type="primary" size="mini" icon="el-icon-edit"></el-button>
+          <el-button type="primary" size="mini" icon="el-icon-edit"></el-button>
+      </template>
     </el-table-column>
   </el-table>
   <el-pagination
@@ -47,17 +67,30 @@
 </template>
 
 <script>
-import {getUsersData} from '../../api/api.js'
+import {getUsersData, toggleUserState} from '../../api/api.js'
 export default {
   data () {
     return {
       currentPage: 1,
-      pagesize: 2,
+      pagesize: 5,
       total: 100,
       tableData: []
     }
   },
   methods: {
+    toggleUser (data) {
+      toggleUserState({
+        uId: data.id,
+        state: data.mg_state
+      }).then(res => {
+        if (res.meta.status === 200) {
+          this.$message({
+            message: res.meta.msg,
+            type: 'success'
+          })
+        }
+      })
+    },
     handleSizeChange (val) {
       this.pagesize = val
       this.initList()
