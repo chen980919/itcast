@@ -1,6 +1,7 @@
 <template>
  <el-container>
   <el-aside :style='{width:"auto"}'>
+    <div class="logo"></div>
     <el-menu
         router
         :collapse="isCollapse"

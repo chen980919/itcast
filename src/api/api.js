@@ -61,3 +61,15 @@ export const deleteUser = (params) => {
     return res.data
   })
 }
+// 权限管理-权限列表查询
+export const rightList = (params) => {
+  return axios.get('rights/' + params.type).then(res => {
+    return res.data
+  })
+}
+// 权限管理-角色列表查询
+export const roleList = () => {
+  return axios.get('roles').then(res => {
+    return res.data
+  })
+}
