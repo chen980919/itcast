@@ -79,3 +79,15 @@ export const addRole = (params) => {
     return res.data
   })
 }
+// 权限管理-根据id查询角色信息
+export const getRoleById = (params) => {
+  return axios.get('roles/' + params.id).then(res => {
+    return res.data
+  })
+}
+// 权限管理-修改用户角色
+export const editRole = (params) => {
+  return axios.put('roles/' + params.id, params).then(res => {
+    return res.data
+  })
+}

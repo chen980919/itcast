@@ -53,9 +53,8 @@
          width="260"
         label="操作">
         <template slot-scope="scope">
-          <span v-if='scope.row.level === "0"'>一层</span>
-          <span v-else-if='scope.row.level === "1"'>二级</span>
-          <span v-else>三级</span>
+           <el-button type="primary" size="mini"  @click='editHandler(scope.row)' icon="el-icon-edit"></el-button>
+          <el-button type="danger" size="mini" @click='deleteHandler(scope.row)' icon="el-icon-delete"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -77,16 +76,39 @@
     <el-button type="primary" @click="submitRole">确 定</el-button>
     </span>
     </el-dialog>
+    <!-- 编辑角色弹窗 -->
+    <el-dialog
+        title="编辑用户"
+      :visible.sync="dialogVisible4Edit"
+       width="50%">
+      <el-form ref="eroleform" :rules="rules" :model="erole" label-width="80px">
+      <el-form-item label="角色名称" prop="roleName">
+          <el-input v-model="erole.roleName"></el-input>
+      </el-form-item>
+      <el-form-item label="描述" prop="roleDesc">
+          <el-input v-model="erole.roleDesc"></el-input>
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible4Edit = false">取 消</el-button>
+    <el-button type="primary" @click="submitRole4Edit">确 定</el-button>
+    </span>
+    </el-dialog>
   </template>
     </div>
 </template>
 
 <script>
-import {roleList, addRole} from '../../api/api.js'
+import {roleList, addRole, getRoleById, editRole} from '../../api/api.js'
 export default {
   data () {
     return {
       role: {
+        roleName: '',
+        roleDesc: ''
+      },
+      erole: {
+        id: '',
         roleName: '',
         roleDesc: ''
       },
@@ -99,11 +121,38 @@ export default {
         ]
       },
       dialogVisible4Add: false,
+      dialogVisible4Edit: false,
       tableData: []
     }
   },
   methods: {
+    submitRole4Edit () {
+      this.$refs['eroleform'].validate(valid => {
+        if (valid) {
+          editRole(this.erole).then(res => {
+            if (res.meta.status === 200) {
+              this.initList()
+              this.dialogVisible4Edit = false
+            }
+          })
+        }
+      })
+    },
+    editHandler (row) {
+      // 查询角色
+      getRoleById({id: row.id}).then(res => {
+        if (res.meta.status === 200) {
+          // 填充表单
+          this.erole.id = res.data.roleId
+          this.erole.roleName = res.data.roleName
+          this.erole.roleDesc = res.data.roleDesc
+          // 显示弹框
+          this.dialogVisible4Edit = true
+        }
+      })
+    },
     submitRole () {
+    // 添加角色
       this.$refs['roleform'].validate(valid => {
         if (valid) {
           addRole(this.role).then(res => {
