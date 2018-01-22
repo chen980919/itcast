@@ -73,3 +73,9 @@ export const roleList = () => {
     return res.data
   })
 }
+// 权限管理-角色添加
+export const addRole = (params) => {
+  return axios.post('roles', params).then(res => {
+    return res.data
+  })
+}

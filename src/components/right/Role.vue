@@ -59,19 +59,62 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 添加角色弹窗 -->
+    <el-dialog
+        title="添加用户"
+      :visible.sync="dialogVisible4Add"
+       width="50%">
+      <el-form ref="roleform" :rules="rules" :model="role" label-width="80px">
+      <el-form-item label="角色名称" prop="roleName">
+          <el-input v-model="role.roleName"></el-input>
+      </el-form-item>
+      <el-form-item label="描述" prop="roleDesc">
+          <el-input v-model="role.roleDesc"></el-input>
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible4Add = false">取 消</el-button>
+    <el-button type="primary" @click="submitRole">确 定</el-button>
+    </span>
+    </el-dialog>
   </template>
     </div>
 </template>
 
 <script>
-import {roleList} from '../../api/api.js'
+import {roleList, addRole} from '../../api/api.js'
 export default {
   data () {
     return {
+      role: {
+        roleName: '',
+        roleDesc: ''
+      },
+      rules: {
+        roleName: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
+        ],
+        roleDesc: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ]
+      },
+      dialogVisible4Add: false,
       tableData: []
     }
   },
   methods: {
+    submitRole () {
+      this.$refs['roleform'].validate(valid => {
+        if (valid) {
+          addRole(this.role).then(res => {
+            if (res.meta.status === 201) {
+              this.dialogVisible4Add = false
+              this.initList()
+            }
+          })
+        }
+      })
+    },
     initList () {
       roleList().then(res => {
         if (res.meta.status === 200) {
