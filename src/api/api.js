@@ -91,3 +91,9 @@ export const editRole = (params) => {
     return res.data
   })
 }
+// 权限管理-删除角色
+export const deleteRole = (params) => {
+  return axios.delete('roles/' + params.id).then(res => {
+    return res.data
+  })
+}

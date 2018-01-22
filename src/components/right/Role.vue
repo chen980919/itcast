@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import {roleList, addRole, getRoleById, editRole} from '../../api/api.js'
+import {roleList, addRole, getRoleById, editRole, deleteRole} from '../../api/api.js'
 export default {
   data () {
     return {
@@ -126,13 +126,34 @@ export default {
     }
   },
   methods: {
+    deleteHandler (row) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteRole({id: row.id}).then(res => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.initList()
+        })
+      })
+    },
     submitRole4Edit () {
+      // 编辑角色
       this.$refs['eroleform'].validate(valid => {
         if (valid) {
           editRole(this.erole).then(res => {
             if (res.meta.status === 200) {
               this.initList()
               this.dialogVisible4Edit = false
+              this.$notify({
+                title: '成功',
+                message: '修改用户成功',
+                type: 'success'
+              })
             }
           })
         }
@@ -158,7 +179,14 @@ export default {
           addRole(this.role).then(res => {
             if (res.meta.status === 201) {
               this.dialogVisible4Add = false
+              this.role.roleName = ''
+              this.role.roleDesc = ''
               this.initList()
+              this.$notify({
+                title: '成功',
+                message: '添加用户成功',
+                type: 'success'
+              })
             }
           })
         }

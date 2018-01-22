@@ -183,14 +183,14 @@ export default {
             if (res.meta.status === 200) {
               this.dialogVisible4Edit = false
               this.initList()
+              this.$notify({
+                title: '成功',
+                message: '修改用户成功',
+                type: 'success'
+              })
             }
           })
         }
-      })
-      this.$notify({
-        title: '成功',
-        message: '编辑用户成功',
-        type: 'success'
       })
     },
     editHandler (row) {
@@ -218,14 +218,14 @@ export default {
               this.user.email = ''
               this.user.mobile = ''
               this.initList()
+              this.$notify({
+                title: '成功',
+                message: '添加用户成功',
+                type: 'success'
+              })
             }
           })
         }
-      })
-      this.$notify({
-        title: '成功',
-        message: '添加用户成功',
-        type: 'success'
       })
     },
     toggleUser (data) {
