@@ -49,7 +49,7 @@
        width="280">
       <template slot-scope="scope">
           <el-button type="primary" size="mini"  @click='editHandler(scope.row)' icon="el-icon-edit"></el-button>
-          <el-button type="primary" size="mini" icon="el-icon-edit"></el-button>
+          <el-button type="danger" size="mini" @click='deleteHandler(scope.row)' icon="el-icon-delete"></el-button>
           <el-button type="primary" size="mini" icon="el-icon-edit"></el-button>
       </template>
     </el-table-column>
@@ -93,8 +93,8 @@
       :visible.sync="dialogVisible4Edit"
        width="50%">
       <el-form ref="userform4Edit" :rules="rules" :model="euser" label-width="80px">
-      <el-form-item label="用户名" prop="username">
-          <el-input v-model="euser.username"></el-input>
+      <el-form-item modal = false label="用户名" prop="username">
+          <el-input disabled="disabled" v-model="euser.username"></el-input>
       </el-form-item>
       <el-form-item label="邮 箱" prop="email">
           <el-input v-model="euser.email"></el-input>
@@ -112,7 +112,7 @@
 </template>
 
 <script>
-import {getUsersData, toggleUserState, addUser, getUserById, editUser} from '../../api/api.js'
+import {getUsersData, toggleUserState, addUser, getUserById, editUser, deleteUser} from '../../api/api.js'
 export default {
   data () {
     return {
@@ -152,6 +152,24 @@ export default {
     }
   },
   methods: {
+    deleteHandler (row) {
+      // 删除操作
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteUser({id: row.id}).then(res => {
+          if (res.meta.status === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.initList()
+          }
+        })
+      })
+    },
     submitUser4Edit () {
       // 编辑用户提交
       this.$refs['userform4Edit'].validate(valid => {

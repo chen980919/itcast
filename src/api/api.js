@@ -55,3 +55,9 @@ export const editUser = (params) => {
     return res.data
   })
 }
+// 用户管理-删除用户
+export const deleteUser = (params) => {
+  return axios.delete('users/' + params.id).then(res => {
+    return res.data
+  })
+}
