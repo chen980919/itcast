@@ -9,7 +9,7 @@
       <el-input placeholder="请输入内容" class="search">
         <el-button slot="append" icon="el-icon-search"></el-button>
       </el-input>
-      <el-button type="success" @click="dialogVisible = true"  plain>添加用户</el-button>
+      <el-button type="success" @click="dialogVisible4Add = true"  plain>添加用户</el-button>
     </div>
     <el-table
     :data="tableData"
@@ -48,7 +48,7 @@
       label="操作"
        width="280">
       <template slot-scope="scope">
-          <el-button type="primary" size="mini" icon="el-icon-edit"></el-button>
+          <el-button type="primary" size="mini"  @click='editHandler(scope.row)' icon="el-icon-edit"></el-button>
           <el-button type="primary" size="mini" icon="el-icon-edit"></el-button>
           <el-button type="primary" size="mini" icon="el-icon-edit"></el-button>
       </template>
@@ -66,7 +66,7 @@
     <!-- 添加用户的弹窗 -->
     <el-dialog
         title="添加用户"
-      :visible.sync="dialogVisible"
+      :visible.sync="dialogVisible4Add"
        width="50%">
       <el-form ref="userform" :rules="rules" :model="user" label-width="80px">
       <el-form-item label="用户名" prop="username">
@@ -75,7 +75,7 @@
       <el-form-item label="密 码" prop="password">
           <el-input v-model="user.password"></el-input>
       </el-form-item>
-      <el-form-item label="邮 箱" prop="password">
+      <el-form-item label="邮 箱" prop="email">
           <el-input v-model="user.email"></el-input>
       </el-form-item>
       <el-form-item label="电 话" prop="mobile">
@@ -83,19 +83,47 @@
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button @click="dialogVisible4Add = false">取 消</el-button>
     <el-button type="primary" @click="submitUser">确 定</el-button>
+    </span>
+    </el-dialog>
+    <!-- 编辑用户 -->
+    <el-dialog
+        title="编辑用户"
+      :visible.sync="dialogVisible4Edit"
+       width="50%">
+      <el-form ref="userform4Edit" :rules="rules" :model="euser" label-width="80px">
+      <el-form-item label="用户名" prop="username">
+          <el-input v-model="euser.username"></el-input>
+      </el-form-item>
+      <el-form-item label="邮 箱" prop="email">
+          <el-input v-model="euser.email"></el-input>
+      </el-form-item>
+      <el-form-item label="电 话" prop="mobile">
+          <el-input v-model="euser.mobile"></el-input>
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible4Edit = false">取 消</el-button>
+    <el-button type="primary"  @click="submitUser4Edit">确 定</el-button>
     </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {getUsersData, toggleUserState, addUser} from '../../api/api.js'
+import {getUsersData, toggleUserState, addUser, getUserById, editUser} from '../../api/api.js'
 export default {
   data () {
     return {
       user: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      },
+      euser: {
+        id: '',
         username: '',
         password: '',
         email: '',
@@ -115,7 +143,8 @@ export default {
           { required: true, message: '请输入电话号码', trigger: 'blur' }
         ]
       },
-      dialogVisible: false,
+      dialogVisible4Add: false,
+      dialogVisible4Edit: false,
       currentPage: 1,
       pagesize: 5,
       total: 100,
@@ -123,17 +152,57 @@ export default {
     }
   },
   methods: {
+    submitUser4Edit () {
+      // 编辑用户提交
+      this.$refs['userform4Edit'].validate(valid => {
+        if (valid) {
+          editUser(this.euser).then(res => {
+            if (res.meta.status === 200) {
+              this.dialogVisible4Edit = false
+              this.initList()
+            }
+          })
+        }
+      })
+      this.$notify({
+        title: '成功',
+        message: '编辑用户成功',
+        type: 'success'
+      })
+    },
+    editHandler (row) {
+      // 根据id查找用户的数据
+      getUserById({id: row.id}).then(res => {
+        if (res.meta.status === 200) {
+          this.euser.id = res.data.id
+          this.euser.username = res.data.username
+          this.euser.email = res.data.email
+          this.euser.mobile = res.data.mobile
+
+          this.dialogVisible4Edit = true
+        }
+      })
+    },
     submitUser () {
       // 添加用户
       this.$refs['userform'].validate(valid => {
         if (valid) {
           addUser(this.user).then(res => {
             if (res.meta.status === 201) {
-              this.dialogVisible = false
+              this.dialogVisible4Add = false
+              this.user.username = ''
+              this.user.password = ''
+              this.user.email = ''
+              this.user.mobile = ''
               this.initList()
             }
           })
         }
+      })
+      this.$notify({
+        title: '成功',
+        message: '添加用户成功',
+        type: 'success'
       })
     },
     toggleUser (data) {
