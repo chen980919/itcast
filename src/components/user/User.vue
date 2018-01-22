@@ -6,10 +6,10 @@
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
     <div>
-      <el-input placeholder="请输入内容" class="search">
-        <el-button slot="append" icon="el-icon-search"></el-button>
+      <el-input v-model='query' placeholder="请输入内容" class="search">
+        <el-button @click='queryHandler' slot="append" icon="el-icon-search"></el-button>
       </el-input>
-      <el-button type="success" @click="dialogVisible4Add = true"  plain>添加用户</el-button>
+      <el-button type="success" plain @click='dialogVisible4Add = true'>添加用户</el-button>
     </div>
     <el-table
     :data="tableData"
@@ -50,7 +50,7 @@
       <template slot-scope="scope">
           <el-button type="primary" size="mini"  @click='editHandler(scope.row)' icon="el-icon-edit"></el-button>
           <el-button type="danger" size="mini" @click='deleteHandler(scope.row)' icon="el-icon-delete"></el-button>
-          <el-button type="primary" size="mini" icon="el-icon-edit"></el-button>
+          <el-button type="success" size="mini"  icon="el-icon-check"></el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -145,6 +145,7 @@ export default {
       },
       dialogVisible4Add: false,
       dialogVisible4Edit: false,
+      query: '',
       currentPage: 1,
       pagesize: 5,
       total: 100,
@@ -152,6 +153,10 @@ export default {
     }
   },
   methods: {
+    queryHandler () {
+      // 关键字搜索
+      this.initList()
+    },
     deleteHandler (row) {
       // 删除操作
       this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
@@ -246,7 +251,7 @@ export default {
     },
     initList () {
       getUsersData({
-        query: '',
+        query: this.query,
         pagenum: this.currentPage,
         pagesize: this.pagesize
       }).then(res => {
