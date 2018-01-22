@@ -37,3 +37,9 @@ export const toggleUserState = (params) => {
     return res.data
   })
 }
+// 用户管理-状态改变
+export const addUser = (params) => {
+  return axios.post('users', params).then(res => {
+    return res.data
+  })
+}
