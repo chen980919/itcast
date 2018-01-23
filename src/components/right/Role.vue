@@ -55,6 +55,7 @@
         <template slot-scope="scope">
            <el-button type="primary" size="mini"  @click='editHandler(scope.row)' icon="el-icon-edit"></el-button>
           <el-button type="danger" size="mini" @click='deleteHandler(scope.row)' icon="el-icon-delete"></el-button>
+          <el-button type="success" size="mini" @click='grantHandler(scope.row)'  icon="el-icon-check"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -94,15 +95,40 @@
     <el-button type="primary" @click="submitRole4Edit">确 定</el-button>
     </span>
     </el-dialog>
+        <!-- 角色授权弹窗 -->
+    <el-dialog
+        title="角色授权"
+      :visible.sync="dialogVisible4Grant"
+       width="50%">
+      <el-tree
+        :data="treeData"
+        show-checkbox
+        default-expand-all
+        ref='tree'
+        node-key="id"
+        :default-checked-keys="selectTree"
+        :props="treeProps">
+      </el-tree>
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible4Grant = false">取 消</el-button>
+    <el-button type="primary" @click="submitGrant1">确 定</el-button>
+    </span>
+    </el-dialog>
   </template>
     </div>
 </template>
 
 <script>
-import {roleList, addRole, getRoleById, editRole, deleteRole, deleteRoleRight} from '../../api/api.js'
+import {roleList, addRole, getRoleById, editRole, deleteRole, deleteRoleRight, rightList, submitGrant} from '../../api/api.js'
 export default {
   data () {
     return {
+      selectTree: [],
+      treeData: [],
+      treeProps: {
+        label: 'authName',
+        children: 'children'
+      },
       role: {
         roleName: '',
         roleDesc: ''
@@ -122,10 +148,57 @@ export default {
       },
       dialogVisible4Add: false,
       dialogVisible4Edit: false,
-      tableData: []
+      dialogVisible4Grant: false,
+      tableData: [],
+      currentRole: ''
     }
   },
   methods: {
+    _getThirdRightId (data, arr) {
+      // 获取权限的三级id
+      data.forEach((item) => {
+        if (!item.children) {
+          arr.push(item.id)
+        } else {
+          this._getThirdRightId(item.children, arr)
+        }
+      })
+    },
+    submitGrant1 () {
+      // 获取选中的的数据对象列表
+      // 对数据处理转换为用逗号分割的id列表
+      let list = this.$refs['tree'].getCheckedNodes()
+      let ids = list.map(item => {
+        return item.id + ',' + item.pid
+      })
+      let tmp = new Set(ids.join(',').split(','))
+      let result = [...tmp].join(',')
+      submitGrant({roleId: this.currentRole, rids: result}).then(res => {
+        if (res.meta.status === 200) {
+          // 刷新列表
+          this.initList()
+          // 关闭弹窗
+          this.dialogVisible4Grant = false
+          // 提示框
+          this.$message({
+            message: res.meta.msg,
+            type: 'success'
+          })
+        }
+      })
+    },
+    grantHandler (row) {
+      rightList({type: 'tree'}).then(res => {
+        if (res.meta.status === 200) {
+          this.treeData = res.data
+          this.selectTree = []
+          this._getThirdRightId(row.children, this.selectTree)
+          this.dialogVisible4Grant = true
+          // 获得角色id
+          this.currentRole = row.id
+        }
+      })
+    },
     deleteRight (row, rightId) {
       // 角色权限的删除
       deleteRoleRight({roleId: row.id, rightId: rightId}).then(res => {
