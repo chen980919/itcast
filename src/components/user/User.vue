@@ -23,7 +23,7 @@
     <el-table-column
       prop="username"
       label="姓名"
-      width="180">
+      width="150">
     </el-table-column>
     <el-table-column
       prop="email"
@@ -33,12 +33,17 @@
     <el-table-column
       prop="mobile"
       label="电话"
-       width="180">
+       width="150">
+    </el-table-column>
+    <el-table-column
+      prop="role_name"
+      label="角色"
+       width="160">
     </el-table-column>
     <el-table-column
       prop="mg_state"
       label="用户状态"
-       width="180">
+       width="100">
       <template slot-scope="scope">
           <el-switch v-model="scope.row.mg_state" @change='toggleUser(scope.row )'></el-switch>
       </template>
@@ -50,7 +55,7 @@
       <template slot-scope="scope">
           <el-button type="primary" size="mini"  @click='editHandler(scope.row)' icon="el-icon-edit"></el-button>
           <el-button type="danger" size="mini" @click='deleteHandler(scope.row)' icon="el-icon-delete"></el-button>
-          <el-button type="success" size="mini"  icon="el-icon-check"></el-button>
+          <el-button type="success" size="mini" @click='grantHandler(scope.row)'  icon="el-icon-check"></el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -108,11 +113,30 @@
     <el-button type="primary"  @click="submitUser4Edit">确 定</el-button>
     </span>
     </el-dialog>
+    <!-- 分配角色弹窗 -->
+    <el-dialog
+        title="设置角色"
+      :visible.sync="dialogVisible4Grant"
+       width="50%">
+       <div><span>当前用户 :</span>  <span>{{currentUser.username}}</span></div>
+       <span>设置当前角色: </span><el-select v-model="cuurrentRole" placeholder="请选择">
+        <el-option
+          v-for="item in roleList"
+          :key="item.id"
+          :label="item.roleName"
+          :value="item.id">
+        </el-option>
+      </el-select>
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible4Grant = false">取 消</el-button>
+    <el-button type="primary"  @click="submitUser4role">确 定</el-button>
+    </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {getUsersData, toggleUserState, addUser, getUserById, editUser, deleteUser} from '../../api/api.js'
+import {getUsersData, toggleUserState, addUser, getUserById, editUser, deleteUser, roleList, giveRole} from '../../api/api.js'
 export default {
   data () {
     return {
@@ -145,6 +169,10 @@ export default {
       },
       dialogVisible4Add: false,
       dialogVisible4Edit: false,
+      dialogVisible4Grant: false,
+      currentUser: {},
+      cuurrentRole: '',
+      roleList: [],
       query: '',
       currentPage: 1,
       pagesize: 5,
@@ -153,6 +181,33 @@ export default {
     }
   },
   methods: {
+    submitUser4role () {
+      giveRole({id: this.currentUser.id, rid: this.cuurrentRole}).then(res => {
+        if (res.meta.status === 200) {
+          this.cuurrentRole = ''
+          // 更新页数据
+          this.initList()
+          // 关闭弹窗
+          this.dialogVisible4Grant = false
+          // 提示
+          this.$notify({
+            title: '成功',
+            message: res.meta.msg,
+            type: 'success'
+          })
+        }
+      })
+    },
+    grantHandler (row) {
+      // 查询角色
+      this.currentUser = row
+      roleList().then(res => {
+        if (res.meta.status === 200) {
+          this.roleList = res.data
+        }
+      })
+      this.dialogVisible4Grant = true
+    },
     queryHandler () {
       // 关键字搜索
       this.initList()

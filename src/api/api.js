@@ -109,3 +109,9 @@ export const submitGrant = (params) => {
     return res.data
   })
 }
+// 用户管理-用户角色提交
+export const giveRole = (params) => {
+  return axios.put('users/' + params.id + '/role', params).then(res => {
+    return res.data
+  })
+}
