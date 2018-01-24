@@ -115,3 +115,9 @@ export const giveRole = (params) => {
     return res.data
   })
 }
+// 左侧导航栏获取
+export const getmenu = () => {
+  return axios.get('menus').then(res => {
+    return res.data
+  })
+}

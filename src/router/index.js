@@ -24,8 +24,8 @@ export default new Router({
       children: [
         {path: '/welcome', component: Welcome},
         {path: '/users', component: User},
-        {path: '/auth', component: Right},
-        {path: '/role', component: Role}
+        {path: '/rights', component: Right},
+        {path: '/roles', component: Role}
       ]
     }
   ]
