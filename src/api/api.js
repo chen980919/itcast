@@ -121,3 +121,9 @@ export const getmenu = () => {
     return res.data
   })
 }
+// 商品分类-分类列表
+export const getCategories = (params) => {
+  return axios.get('categories', {params: params}).then(res => {
+    return res.data
+  })
+}
