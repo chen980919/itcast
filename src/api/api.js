@@ -127,3 +127,21 @@ export const getCategories = (params) => {
     return res.data
   })
 }
+// 商品分类-添加分类
+export const addCate = (params) => {
+  return axios.post('categories', params).then(res => {
+    return res.data
+  })
+}
+// 商品分类-根据id获取分类信息
+export const getCateById = (params) => {
+  return axios.get('categories/' + params.id).then(res => {
+    return res.data
+  })
+}
+// 商品分类-编辑提交
+export const editCate = (params) => {
+  return axios.put('categories/' + params.cat_pid, params).then(res => {
+    return res.data
+  })
+}
