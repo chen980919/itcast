@@ -226,7 +226,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .el-breadcrumb {
     background-color: #D3DCE6;
     height: 50px;
