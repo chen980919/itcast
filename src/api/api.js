@@ -145,3 +145,9 @@ export const editCate = (params) => {
     return res.data
   })
 }
+// 商品分类-删除分类
+export const deleteCate = (params) => {
+  return axios.delete('categories/' + params.id).then(res => {
+    return res.data
+  })
+}
