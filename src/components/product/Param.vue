@@ -22,6 +22,11 @@
             :data="tableData"
             border
             style="width: 100%">
+            <el-table-column type="expand">
+              <template slot-scope="scope">
+                <div>动态参数</div>
+              </template>
+            </el-table-column>
             <el-table-column
               type="index"
               label="#"
@@ -115,7 +120,7 @@ export default {
       })
     },
     handleChange () {
-      this._getParamsData('dtableData')
+      this._getParamsData('tableData')
     },
     initListParam () {
       getCategories({type: 3}).then(res => {

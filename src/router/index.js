@@ -8,6 +8,8 @@ import Right from '@/components/right/Right'
 import Role from '@/components/right/Role'
 import Category from '@/components/product/Category'
 import Param from '@/components/product/Param'
+import PHome from '@/components/product/PHome'
+import List from '@/components/product/List'
 
 Vue.use(Router)
 
@@ -29,7 +31,14 @@ export default new Router({
         {path: '/rights', component: Right},
         {path: '/roles', component: Role},
         {path: '/categories', component: Category},
-        {path: '/params', component: Param}
+        {path: '/params', component: Param},
+        {path: '/goods',
+          component: PHome,
+          redirect: '/list',
+          children: [
+            {path: '/list', component: List}
+          ]
+        }
       ]
     }
   ]
